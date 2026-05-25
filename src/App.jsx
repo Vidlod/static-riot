@@ -151,26 +151,11 @@ export default function App() {
           <div className="release-grid">
             {/* Album artwork (inline SVG) */}
             <div className="art-wrap reveal">
-              <svg
-                viewBox="0 0 400 400"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-label="Portada Signal Lost"
-              >
-                <rect width="400" height="400" fill="#080808" />
-                {/* diagonal slash */}
-                <line x1="0" y1="400" x2="400" y2="0" stroke="#FF0000" strokeWidth="78" opacity=".92" />
-                {/* border */}
-                <rect x="0" y="0" width="400" height="400" fill="none" stroke="#FF0000" strokeWidth="10" />
-                {/* inner border */}
-                <rect x="12" y="12" width="376" height="376" fill="none" stroke="#1A1A1A" strokeWidth="2" />
-                {/* text */}
-                <text x="200" y="168" textAnchor="middle" fill="#fff"
-                  fontFamily="'Bebas Neue', sans-serif" fontSize="68" letterSpacing="10">SIGNAL</text>
-                <text x="200" y="248" textAnchor="middle" fill="#FF0000"
-                  fontFamily="'Bebas Neue', sans-serif" fontSize="68" letterSpacing="10">LOST</text>
-                <text x="200" y="344" textAnchor="middle" fill="#333"
-                  fontFamily="monospace" fontSize="12" letterSpacing="5">BLACKOUT RECORDS · 2026</text>
-              </svg>
+              <img
+                className="album-cover"
+                src="/album-cover.jpg"
+                alt="Portada Signal Lost — Static Riot"
+              />
 
               <span className="art-new-tag" aria-label="Out now">OUT NOW</span>
             </div>
