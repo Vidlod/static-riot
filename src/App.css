@@ -74,10 +74,10 @@
 
 /* ─── SCROLL-VIDEO HERO ─── */
 
-/* Tall section that gives scroll room (300vh = ~15s of scrub feel for a 5s video) */
+/* Tall section — 180vh da scrub rápido sin sacrificar demasiado scroll */
 .vh-section {
   position: relative;
-  height: 300vh;
+  height: 180vh;
 }
 
 /* Sticky viewport frame */
