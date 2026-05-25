@@ -74,17 +74,15 @@
 
 /* ─── SCROLL-VIDEO HERO ─── */
 
-/* Tall section — 180vh da scrub rápido sin sacrificar demasiado scroll */
+/* Hero normal — 100vh, sin scroll extra */
 .vh-section {
   position: relative;
-  height: 180vh;
+  height: 100vh;
 }
 
-/* Sticky viewport frame */
 .vh-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: relative;
+  height: 100%;
   overflow: hidden;
 }
 
