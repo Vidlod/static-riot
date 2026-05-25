@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import './App.css'
 
 /* ─── Data ─── */
@@ -31,6 +31,10 @@ const MERCH = [
 const TICKER_TEXT = '· STATIC RIOT · SIGNAL LOST 2026 · BLACKOUT RECORDS · DEAD SIGNAL TOUR · NOISE IS OUR RELIGION · NO RULES '
 
 export default function App() {
+  const videoRef    = useRef(null)
+  const sectionRef  = useRef(null)
+  const contentRef  = useRef(null)
+
   /* Scroll reveal */
   useEffect(() => {
     const els = document.querySelectorAll('.reveal')
@@ -50,6 +54,40 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  /* Scroll-driven video scrubbing */
+  useEffect(() => {
+    const video   = videoRef.current
+    const section = sectionRef.current
+    const content = contentRef.current
+    if (!video || !section) return
+
+    // Preload the video fully so scrubbing is smooth
+    video.preload = 'auto'
+    video.load()
+
+    const onScroll = () => {
+      const rect       = section.getBoundingClientRect()
+      const scrollable = section.offsetHeight - window.innerHeight
+      const scrolled   = Math.max(0, -rect.top)
+      const progress   = Math.min(1, scrolled / scrollable)
+
+      // Drive video time
+      if (video.readyState >= 2 && video.duration) {
+        video.currentTime = progress * video.duration
+      }
+
+      // Fade + lift hero text as video takes over (first 35% of scroll)
+      if (content) {
+        const fade = Math.min(1, progress / 0.35)
+        content.style.opacity   = String(1 - fade)
+        content.style.transform = `translateY(${-fade * 40}px)`
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <div className="site">
 
@@ -64,29 +102,44 @@ export default function App() {
         <a href="#contact" className="nav-cta">CONTACTO</a>
       </nav>
 
-      {/* ── HERO ── */}
-      <section className="hero" id="home">
-        <div className="scanlines" aria-hidden="true" />
-        <div className="hero-glow"  aria-hidden="true" />
+      {/* ── SCROLL VIDEO HERO ── */}
+      <section id="home" className="vh-section" ref={sectionRef}>
+        <div className="vh-sticky">
 
-        <div className="hero-body">
-          <span className="hero-eyebrow">BLACKOUT RECORDS &nbsp;·&nbsp; BOGOTÁ &nbsp;·&nbsp; EST. 2021</span>
+          {/* Video layer */}
+          <video
+            ref={videoRef}
+            className="vh-video"
+            src="/hero.mp4"
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+          />
 
-          <h1 className="hero-title glitch" data-text="STATIC RIOT">
-            STATIC<br />RIOT
-          </h1>
+          {/* Overlays */}
+          <div className="vh-scanlines" aria-hidden="true" />
+          <div className="vh-overlay"   aria-hidden="true" />
+          <div className="vh-vignette"  aria-hidden="true" />
 
-          <p className="hero-tagline">— NOISE IS OUR RELIGION —</p>
-
-          <div className="hero-actions">
-            <a href="#release" className="btn btn-red">ESCUCHAR AHORA</a>
-            <a href="#shows"   className="btn btn-outline">VER FECHAS →</a>
+          {/* Hero content — fades out on scroll */}
+          <div className="vh-content" ref={contentRef}>
+            <span className="hero-eyebrow">BLACKOUT RECORDS &nbsp;·&nbsp; BOGOTÁ &nbsp;·&nbsp; EST. 2021</span>
+            <h1 className="hero-title glitch" data-text="STATIC RIOT">
+              STATIC<br />RIOT
+            </h1>
+            <p className="hero-tagline">— NOISE IS OUR RELIGION —</p>
+            <div className="hero-actions">
+              <a href="#release" className="btn btn-red">ESCUCHAR AHORA</a>
+              <a href="#shows"   className="btn btn-outline">VER FECHAS →</a>
+            </div>
           </div>
-        </div>
 
-        <div className="hero-scroll" aria-hidden="true">
-          <div className="hero-scroll-bar" />
-          <span className="hero-scroll-label">SCROLL</span>
+          {/* Scroll progress bar (bottom) */}
+          <div className="vh-scroll" aria-hidden="true">
+            <div className="hero-scroll-bar" />
+            <span className="hero-scroll-label">SCROLL</span>
+          </div>
         </div>
       </section>
 

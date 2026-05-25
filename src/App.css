@@ -72,6 +72,90 @@
   97%        { opacity:1; }
 }
 
+/* ─── SCROLL-VIDEO HERO ─── */
+
+/* Tall section that gives scroll room (300vh = ~15s of scrub feel for a 5s video) */
+.vh-section {
+  position: relative;
+  height: 300vh;
+}
+
+/* Sticky viewport frame */
+.vh-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Video fills full viewport */
+.vh-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* CSS scanline grain */
+.vh-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.18) 2px,
+    rgba(0,0,0,.18) 4px
+  );
+}
+
+/* Dark overlay for readability */
+.vh-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(0,0,0,.52);
+}
+
+/* Vignette edges */
+.vh-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.75) 100%);
+  pointer-events: none;
+}
+
+/* Text / CTA layer */
+.vh-content {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  transition: opacity .05s linear, transform .05s linear;
+}
+
+/* Scroll indicator */
+.vh-scroll {
+  position: absolute;
+  bottom: 2rem;
+  right: 2.5rem;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+}
+
 /* ─── NAV ─── */
 .nav {
   position: fixed; top:0; left:0; right:0; z-index:100;
@@ -114,32 +198,7 @@
 }
 .nav-cta:hover { background:var(--red); color:var(--black); }
 
-/* ─── HERO ─── */
-.hero {
-  position:relative; min-height:100vh;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  overflow:hidden; padding:2rem;
-}
-
-/* Scanlines overlay */
-.scanlines {
-  position:absolute; inset:0; pointer-events:none; z-index:1;
-  background: repeating-linear-gradient(
-    0deg, transparent, transparent 2px,
-    rgba(0,0,0,.22) 2px, rgba(0,0,0,.22) 4px
-  );
-}
-
-/* Red radial glow */
-.hero-glow {
-  position:absolute; pointer-events:none; z-index:0;
-  width:65vw; height:65vw; max-width:900px; max-height:900px;
-  border-radius:50%;
-  background: radial-gradient(circle, rgba(255,0,0,.06) 0%, transparent 68%);
-}
-
-.hero-body { position:relative; z-index:2; text-align:center; }
+/* .hero-body lives inside .vh-content now */
 
 .hero-eyebrow {
   display:block;
