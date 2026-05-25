@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 /* ─── Data ─── */
@@ -31,6 +31,8 @@ const MERCH = [
 const TICKER_TEXT = '· STATIC RIOT · SIGNAL LOST 2026 · BLACKOUT RECORDS · DEAD SIGNAL TOUR · NOISE IS OUR RELIGION · NO RULES '
 
 export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   /* Scroll reveal */
   useEffect(() => {
     const els = document.querySelectorAll('.reveal')
@@ -56,13 +58,41 @@ export default function App() {
       {/* ── NAV ── */}
       <nav id="nav" className="nav">
         <a href="#" className="nav-brand">SR</a>
+
+        {/* Desktop links */}
         <ul className="nav-links">
           <li><a href="#release">MÚSICA</a></li>
           <li><a href="#shows">SHOWS</a></li>
           <li><a href="#merch">MERCH</a></li>
         </ul>
-        <a href="#contact" className="nav-cta">CONTACTO</a>
+        <a href="#contact" className="nav-cta nav-cta-desktop">CONTACTO</a>
+
+        {/* Hamburger */}
+        <button
+          className="hamburger"
+          onClick={() => setMenuOpen(o => !o)}
+          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={menuOpen}
+        >
+          <span className={`ham-line ${menuOpen ? 'open' : ''}`} />
+          <span className={`ham-line ${menuOpen ? 'open' : ''}`} />
+          <span className={`ham-line ${menuOpen ? 'open' : ''}`} />
+        </button>
       </nav>
+
+      {/* ── MOBILE MENU ── */}
+      <div className={`mobile-menu ${menuOpen ? 'mobile-menu--open' : ''}`} aria-hidden={!menuOpen}>
+        <ul className="mobile-links">
+          {['MÚSICA:#release','SHOWS:#shows','MERCH:#merch','CONTACTO:#contact'].map(item => {
+            const [label, href] = item.split(':')
+            return (
+              <li key={label}>
+                <a href={href} onClick={() => setMenuOpen(false)}>{label}</a>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
 
       {/* ── VIDEO HERO ── */}
       <section id="home" className="vh-section">
@@ -142,17 +172,7 @@ export default function App() {
                   fontFamily="monospace" fontSize="12" letterSpacing="5">BLACKOUT RECORDS · 2026</text>
               </svg>
 
-              {/* Spinning "NEW ALBUM" badge */}
-              <svg className="art-badge" viewBox="0 0 100 100" aria-hidden="true">
-                <defs>
-                  <path id="circle-path" d="M 50,50 m -35,0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" />
-                </defs>
-                <circle cx="50" cy="50" r="44" fill="#FF0000" />
-                <circle cx="50" cy="50" r="32" fill="#080808" />
-                <text fill="#fff" fontFamily="'Space Mono', monospace" fontSize="9.5" fontWeight="700" letterSpacing="3">
-                  <textPath href="#circle-path">· NEW ALBUM · 2026 · OUT NOW ·</textPath>
-                </text>
-              </svg>
+              <span className="art-new-tag" aria-label="Out now">OUT NOW</span>
             </div>
 
             {/* Info */}
