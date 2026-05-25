@@ -240,41 +240,11 @@ export default function App() {
                 <div className="merch-img">
                   <span className="merch-tag">{item.tag}</span>
 
-                  {/* SVG placeholder per item */}
-                  {i === 0 && (
-                    <svg className="merch-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-label={item.name}>
-                      <rect width="220" height="220" fill="#111" />
-                      <rect x="55" y="30" width="110" height="160" rx="3" fill="none" stroke="#FF0000" strokeWidth="2" />
-                      <line x1="55" y1="75" x2="165" y2="75" stroke="#FF0000" strokeWidth="1" opacity=".5" />
-                      <text x="110" y="130" textAnchor="middle" fill="#fff"
-                        fontFamily="'Bebas Neue',sans-serif" fontSize="30" letterSpacing="4">SR</text>
-                      <text x="110" y="158" textAnchor="middle" fill="#555"
-                        fontFamily="monospace" fontSize="8" letterSpacing="3">STATIC RIOT</text>
-                    </svg>
-                  )}
-                  {i === 1 && (
-                    <svg className="merch-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-label={item.name}>
-                      <rect width="220" height="220" fill="#111" />
-                      <circle cx="110" cy="110" r="85" fill="none" stroke="#FF0000" strokeWidth="2" />
-                      <circle cx="110" cy="110" r="60" fill="none" stroke="#222" strokeWidth="20" />
-                      <circle cx="110" cy="110" r="24" fill="#FF0000" />
-                      <circle cx="110" cy="110" r="9"  fill="#111" />
-                      <line x1="110" y1="25" x2="110" y2="195" stroke="#1A1A1A" strokeWidth="1" />
-                      <line x1="25" y1="110" x2="195" y2="110" stroke="#1A1A1A" strokeWidth="1" />
-                    </svg>
-                  )}
-                  {i === 2 && (
-                    <svg className="merch-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-label={item.name}>
-                      <rect width="220" height="220" fill="#111" />
-                      <line x1="22" y1="22" x2="198" y2="198" stroke="#FF0000" strokeWidth="2" />
-                      <line x1="198" y1="22" x2="22"  y2="198" stroke="#FF0000" strokeWidth="2" />
-                      <rect x="22" y="22" width="176" height="176" fill="none" stroke="#2A2A2A" strokeWidth="1" />
-                      <text x="110" y="118" textAnchor="middle" fill="#fff"
-                        fontFamily="'Bebas Neue',sans-serif" fontSize="18" letterSpacing="5">STATIC RIOT</text>
-                      <text x="110" y="142" textAnchor="middle" fill="#555"
-                        fontFamily="monospace" fontSize="7" letterSpacing="3">SIGNAL LOST · 2026</text>
-                    </svg>
-                  )}
+                  <img
+                    className="merch-svg"
+                    src={['/merch-tee.jpg', '/merch-vinyl.jpg', '/merch-poster.jpg'][i]}
+                    alt={item.name}
+                  />
                 </div>
 
                 <div className="merch-body">
