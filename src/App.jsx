@@ -203,10 +203,8 @@ export default function App() {
       <section className="manifesto">
         <div className="container">
           <span className="s-label reveal">MANIFESTO · 2026</span>
-          <p className="m-line reveal" style={{ '--d': '0.08s' }}>NO PEDIMOS PERMISO.</p>
-          <p className="m-line reveal" style={{ '--d': '0.18s' }}>NO SEGUIMOS REGLAS.</p>
-          <p className="m-line reveal" style={{ '--d': '0.28s' }}>
-            SOLO HACEMOS <span className="text-red">RUIDO.</span>
+          <p className="m-line reveal" style={{ '--d': '0.08s' }}>
+            NO CUENTA COMO INFIERNO SI TE GUSTA COMO <span className="text-red">QUEMA.</span>
           </p>
         </div>
       </section>
