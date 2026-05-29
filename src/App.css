@@ -62,6 +62,17 @@
   88%  { clip-path:inset(100% 0 0 0);  transform:none; opacity:0; }
 }
 
+/* Ambient video corruption — fires in sync with title g1/g2 every 6s */
+@keyframes ambientVideoGlitch {
+  0%,77%,100% { transform:none; filter:none; }
+  78% { transform: translateX(-6px) skewX(-3deg) scale(1.03); filter: hue-rotate(-16deg) saturate(1.7) contrast(1.35); }
+  80% { transform: translateX(7px) skewX(2deg) scale(1.02);   filter: invert(.10) contrast(1.4); }
+  82% { transform: translateX(-3px) scale(1.04);              filter: brightness(1.35) saturate(.35); }
+  83% { transform: none; filter:none; }
+  86% { transform: translateX(5px) skewX(3deg) scale(1.03);   filter: hue-rotate(18deg) contrast(1.5) saturate(1.5); }
+  88% { transform: none; filter:none; }
+}
+
 /* Red flicker */
 @keyframes flicker {
   0%,100%   { opacity:1; }
@@ -141,6 +152,9 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+  /* Periodic analog corruption, synced with the title's red/cyan split */
+  animation: ambientVideoGlitch 6s 1s infinite linear;
+  will-change: transform, filter;
 }
 
 /* CSS scanline grain */
