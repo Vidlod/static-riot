@@ -33,39 +33,64 @@ const TICKER_TEXT = '· STATIC RIOT · SIGNAL LOST 2026 · BLACKOUT RECORDS · D
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [glitching, setGlitching] = useState(false)
-  const videoRef = useRef(null)
+  const videoRef  = useRef(null)
+  const titleRef  = useRef(null)
+  const stopTimer = useRef(null)
 
-  /* Glitch burst that masks ONLY the video loop seam.
-     Fires in the last ~0.8s before the end, and briefly right AFTER a real
-     loop wrap — never on the initial play (that's why we detect the wrap
-     instead of just checking currentTime < threshold). */
+  /* ── Bug 1 fix: glitch ONLY at the loop seam, NEVER on initial load.
+     Strategy: remove the `loop` attr and drive the loop manually.
+     - timeupdate fires glitch when video is in last 0.6 s AND has already
+       played > 1 s (guards against false-positive at page load).
+     - ended restarts the video from 0 and schedules glitch-off after 600 ms. */
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    let preFired = false
     let raf = null
-    let lastTime = 0
-    let wrappedAt = -Infinity
+
     const onTime = () => {
       if (raf) return
       raf = requestAnimationFrame(() => {
         raf = null
         const dur = v.duration
         if (!dur || Number.isNaN(dur)) return
-        const t = v.currentTime
-        // Time jumped backwards by a big margin → the loop just restarted.
-        if (t < lastTime - 0.4) wrappedAt = performance.now()
-        lastTime = t
-        const approachingEnd = dur - t < 0.8
-        const justWrapped = performance.now() - wrappedAt < 0.3 * 1000
-        const near = approachingEnd || justWrapped
-        setGlitching(prev => (prev !== near ? near : prev))
+        // Only arm glitch after the first second has played (never at t=0)
+        if (v.currentTime > 1 && !preFired && dur - v.currentTime < 0.6) {
+          preFired = true
+          setGlitching(true)
+        }
       })
     }
+
+    const onEnded = () => {
+      v.currentTime = 0
+      v.play().catch(() => {})
+      preFired = false
+      clearTimeout(stopTimer.current)
+      stopTimer.current = setTimeout(() => setGlitching(false), 600)
+    }
+
     v.addEventListener('timeupdate', onTime)
+    v.addEventListener('ended',      onEnded)
     return () => {
       v.removeEventListener('timeupdate', onTime)
+      v.removeEventListener('ended',      onEnded)
       if (raf) cancelAnimationFrame(raf)
+      clearTimeout(stopTimer.current)
     }
+  }, [])
+
+  /* ── Bug 2 fix: after fadeUp completes, freeze the title so the animation
+     never restarts when is-glitching class is toggled on/off. */
+  useEffect(() => {
+    const el = titleRef.current
+    if (!el) return
+    const freeze = (e) => {
+      if (e.animationName !== 'fadeUp') return
+      el.classList.add('hero-title--frozen')
+    }
+    el.addEventListener('animationend', freeze)
+    return () => el.removeEventListener('animationend', freeze)
   }, [])
 
   /* Scroll reveal */
@@ -140,7 +165,6 @@ export default function App() {
             src="/hero.mp4"
             autoPlay
             muted
-            loop
             playsInline
             preload="auto"
             aria-hidden="true"
@@ -155,7 +179,7 @@ export default function App() {
           {/* Hero content */}
           <div className="vh-content">
             <span className="hero-eyebrow">BLACKOUT RECORDS &nbsp;·&nbsp; BOGOTÁ &nbsp;·&nbsp; EST. 2021</span>
-            <h1 className="hero-title glitch" data-text="STATIC RIOT">
+            <h1 ref={titleRef} className="hero-title glitch" data-text="STATIC RIOT">
               STATIC<br />RIOT
             </h1>
             <p className="hero-tagline">— NOISE IS OUR RELIGION —</p>

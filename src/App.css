@@ -315,6 +315,16 @@
 .hero-title::before { color:var(--red);  opacity:0; clip-path:inset(100% 0 0 0); }
 .hero-title::after  { color:cyan;        opacity:0; clip-path:inset(100% 0 0 0); }
 
+/* Freeze the title in its final visible state after fadeUp completes.
+   Specificity: 0,2,0 → lower than .vh-sticky.is-glitching .hero-title (0,3,0)
+   so the glitch animation still overrides this when needed, but fadeUp
+   never re-triggers when is-glitching class is toggled off. */
+.hero-title.hero-title--frozen {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
 .hero-tagline {
   font-size: clamp(.65rem,1.4vw,.85rem);
   letter-spacing:.42em; color:rgba(255,255,255,.38);
