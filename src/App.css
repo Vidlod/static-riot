@@ -72,6 +72,53 @@
   97%        { opacity:1; }
 }
 
+/* ─── LOOP-SEAM GLITCH BURST (masks the video cut) ─── */
+
+/* Video signal corruption: jitter + skew + analog filter sweep */
+@keyframes videoGlitch {
+  0%   { transform: translate(0,0) skewX(0deg) scale(1.02);   filter: contrast(1.1) saturate(1.1); }
+  12%  { transform: translate(-8px,3px) skewX(-4deg) scale(1.04); filter: contrast(1.6) saturate(1.8) hue-rotate(-14deg); }
+  24%  { transform: translate(7px,-4px) skewX(3deg) scale(1.02);  filter: contrast(.7) brightness(1.4) saturate(.3); }
+  37%  { transform: translate(-4px,1px) skewX(0deg) scale(1.05);  filter: invert(.12) contrast(1.5); }
+  50%  { transform: translate(9px,2px) skewX(5deg) scale(1.03);   filter: saturate(.15) brightness(.75); }
+  63%  { transform: translate(-6px,-3px) skewX(-3deg) scale(1.04);filter: contrast(1.7) hue-rotate(18deg) saturate(1.6); }
+  76%  { transform: translate(4px,1px) skewX(2deg) scale(1.02);   filter: brightness(1.5) contrast(.8); }
+  88%  { transform: translate(-3px,2px) skewX(-1deg) scale(1.03); filter: contrast(1.4) saturate(1.4); }
+  100% { transform: translate(0,0) skewX(0deg) scale(1.02);   filter: contrast(1.1) saturate(1.1); }
+}
+
+/* Digital torn bands sweeping vertically */
+@keyframes glitchBars {
+  0%   { background-position: 0 0%;   opacity:.0; }
+  10%  { opacity:.9; }
+  50%  { background-position: 0 100%; opacity:.55; }
+  90%  { opacity:.85; }
+  100% { background-position: 0 0%;   opacity:.0; }
+}
+
+/* Title RGB-split burst — red channel, fast chaotic chops */
+@keyframes burstRed {
+  0%   { clip-path:inset(0 0 0 0);    transform:translate(0,0);     opacity:.9; }
+  15%  { clip-path:inset(8% 0 62% 0); transform:translate(-9px,0);  opacity:.95; }
+  30%  { clip-path:inset(48% 0 18% 0);transform:translate(8px,2px); opacity:.85; }
+  45%  { clip-path:inset(26% 0 44% 0);transform:translate(-6px,-2px);opacity:.9; }
+  60%  { clip-path:inset(70% 0 6% 0); transform:translate(10px,0);  opacity:.8; }
+  75%  { clip-path:inset(14% 0 70% 0);transform:translate(-7px,1px);opacity:.92; }
+  90%  { clip-path:inset(40% 0 30% 0);transform:translate(5px,-1px);opacity:.85; }
+  100% { clip-path:inset(0 0 0 0);    transform:translate(0,0);     opacity:.9; }
+}
+/* Title RGB-split burst — cyan channel, counter-offset */
+@keyframes burstCyan {
+  0%   { clip-path:inset(0 0 0 0);    transform:translate(0,0);     opacity:.7; }
+  15%  { clip-path:inset(58% 0 12% 0);transform:translate(9px,-1px);opacity:.8; }
+  30%  { clip-path:inset(16% 0 58% 0);transform:translate(-8px,0);  opacity:.75; }
+  45%  { clip-path:inset(64% 0 10% 0);transform:translate(7px,2px); opacity:.78; }
+  60%  { clip-path:inset(22% 0 50% 0);transform:translate(-10px,0); opacity:.72; }
+  75%  { clip-path:inset(44% 0 26% 0);transform:translate(6px,-2px);opacity:.8; }
+  90%  { clip-path:inset(10% 0 74% 0);transform:translate(-5px,1px);opacity:.76; }
+  100% { clip-path:inset(0 0 0 0);    transform:translate(0,0);     opacity:.7; }
+}
+
 /* ─── SCROLL-VIDEO HERO ─── */
 
 /* Hero normal — 100vh, sin scroll extra */
@@ -111,12 +158,74 @@
   );
 }
 
+/* Digital torn-bands overlay — only visible during the loop-seam glitch */
+.vh-glitch-bars {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,0,60,.10) 0px,
+      rgba(255,0,60,.10) 3px,
+      transparent 3px,
+      transparent 9px,
+      rgba(0,255,255,.10) 9px,
+      rgba(0,255,255,.10) 12px,
+      transparent 12px,
+      transparent 22px
+    );
+  background-size: 100% 60px;
+}
+
 /* Dark overlay for readability */
 .vh-overlay {
   position: absolute;
   inset: 0;
   z-index: 2;
   background: rgba(0,0,0,.52);
+}
+
+/* ─── GLITCH ACTIVE STATE (seam mask) ─── */
+.vh-sticky.is-glitching .vh-video {
+  animation: videoGlitch .42s steps(2, end) infinite;
+}
+.vh-sticky.is-glitching .vh-glitch-bars {
+  animation: glitchBars .5s linear infinite;
+}
+/* Scanlines bite harder during the burst */
+.vh-sticky.is-glitching .vh-scanlines {
+  opacity: 1;
+  filter: contrast(1.4);
+}
+/* Title channels go full chaos, overriding the ambient g1/g2 */
+.vh-sticky.is-glitching .hero-title::before {
+  animation: burstRed .28s steps(3, end) infinite;
+}
+.vh-sticky.is-glitching .hero-title::after {
+  animation: burstCyan .28s steps(3, end) infinite;
+  opacity: .8;
+}
+/* Whole title micro-shudders */
+.vh-sticky.is-glitching .hero-title {
+  animation: burstShudder .12s steps(2,end) infinite;
+}
+@keyframes burstShudder {
+  0%,100% { transform: translate(0,0); }
+  50%      { transform: translate(2px,-1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vh-sticky.is-glitching .vh-video,
+  .vh-sticky.is-glitching .vh-glitch-bars,
+  .vh-sticky.is-glitching .hero-title,
+  .vh-sticky.is-glitching .hero-title::before,
+  .vh-sticky.is-glitching .hero-title::after {
+    animation: none;
+  }
 }
 
 /* Vignette edges */

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import './App.css'
 
 /* ─── Data ─── */
@@ -32,6 +32,33 @@ const TICKER_TEXT = '· STATIC RIOT · SIGNAL LOST 2026 · BLACKOUT RECORDS · D
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [glitching, setGlitching] = useState(false)
+  const videoRef = useRef(null)
+
+  /* Glitch burst that masks the video loop seam.
+     Fires in the last ~1s before the end AND the first ~0.35s after the
+     loop restarts — covering the cut so the imperfect loop is invisible. */
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    let raf = null
+    const onTime = () => {
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = null
+        const dur = v.duration
+        if (!dur || Number.isNaN(dur)) return
+        const left = dur - v.currentTime
+        const near = left < 1.0 || v.currentTime < 0.35
+        setGlitching(prev => (prev !== near ? near : prev))
+      })
+    }
+    v.addEventListener('timeupdate', onTime)
+    return () => {
+      v.removeEventListener('timeupdate', onTime)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [])
 
   /* Scroll reveal */
   useEffect(() => {
@@ -96,10 +123,11 @@ export default function App() {
 
       {/* ── VIDEO HERO ── */}
       <section id="home" className="vh-section">
-        <div className="vh-sticky">
+        <div className={`vh-sticky ${glitching ? 'is-glitching' : ''}`}>
 
           {/* Video en loop autoplay */}
           <video
+            ref={videoRef}
             className="vh-video"
             src="/hero.mp4"
             autoPlay
@@ -112,6 +140,7 @@ export default function App() {
 
           {/* Overlays */}
           <div className="vh-scanlines" aria-hidden="true" />
+          <div className="vh-glitch-bars" aria-hidden="true" />
           <div className="vh-overlay"   aria-hidden="true" />
           <div className="vh-vignette"  aria-hidden="true" />
 
