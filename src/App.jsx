@@ -35,21 +35,29 @@ export default function App() {
   const [glitching, setGlitching] = useState(false)
   const videoRef = useRef(null)
 
-  /* Glitch burst that masks the video loop seam.
-     Fires in the last ~1s before the end AND the first ~0.35s after the
-     loop restarts — covering the cut so the imperfect loop is invisible. */
+  /* Glitch burst that masks ONLY the video loop seam.
+     Fires in the last ~0.8s before the end, and briefly right AFTER a real
+     loop wrap — never on the initial play (that's why we detect the wrap
+     instead of just checking currentTime < threshold). */
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
     let raf = null
+    let lastTime = 0
+    let wrappedAt = -Infinity
     const onTime = () => {
       if (raf) return
       raf = requestAnimationFrame(() => {
         raf = null
         const dur = v.duration
         if (!dur || Number.isNaN(dur)) return
-        const left = dur - v.currentTime
-        const near = left < 1.0 || v.currentTime < 0.35
+        const t = v.currentTime
+        // Time jumped backwards by a big margin → the loop just restarted.
+        if (t < lastTime - 0.4) wrappedAt = performance.now()
+        lastTime = t
+        const approachingEnd = dur - t < 0.8
+        const justWrapped = performance.now() - wrappedAt < 0.3 * 1000
+        const near = approachingEnd || justWrapped
         setGlitching(prev => (prev !== near ? near : prev))
       })
     }
