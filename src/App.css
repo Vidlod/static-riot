@@ -43,36 +43,6 @@
   to   { transform: translateX(-50%); }
 }
 
-/* Glitch layers */
-@keyframes g1 {
-  0%,78%,100% { clip-path:inset(100% 0 0 0); transform:none; opacity:0; }
-  79%  { clip-path:inset(15% 0 55% 0); transform:translate(-4px,0); opacity:.85; }
-  80%  { clip-path:inset(55% 0 20% 0); transform:translate(4px,0);  opacity:.75; }
-  81%  { clip-path:inset(30% 0 40% 0); transform:translate(-2px,0); opacity:.6;  }
-  82%  { clip-path:inset(100% 0 0 0);  transform:none; opacity:0; }
-  86%  { clip-path:inset(65% 0 10% 0); transform:translate(5px,0);  opacity:.7;  }
-  87%  { clip-path:inset(100% 0 0 0);  transform:none; opacity:0; }
-}
-@keyframes g2 {
-  0%,78%,100% { clip-path:inset(100% 0 0 0); transform:none; opacity:0; }
-  80%  { clip-path:inset(70% 0 5%  0); transform:translate(4px,0);  opacity:.55; }
-  81%  { clip-path:inset(20% 0 60% 0); transform:translate(-4px,0); opacity:.45; }
-  83%  { clip-path:inset(100% 0 0 0);  transform:none; opacity:0; }
-  87%  { clip-path:inset(10% 0 78% 0); transform:translate(-5px,0); opacity:.5;  }
-  88%  { clip-path:inset(100% 0 0 0);  transform:none; opacity:0; }
-}
-
-/* Ambient video corruption — fires in sync with title g1/g2 every 6s */
-@keyframes ambientVideoGlitch {
-  0%,77%,100% { transform:none; filter:none; }
-  78% { transform: translateX(-6px) skewX(-3deg) scale(1.03); filter: hue-rotate(-16deg) saturate(1.7) contrast(1.35); }
-  80% { transform: translateX(7px) skewX(2deg) scale(1.02);   filter: invert(.10) contrast(1.4); }
-  82% { transform: translateX(-3px) scale(1.04);              filter: brightness(1.35) saturate(.35); }
-  83% { transform: none; filter:none; }
-  86% { transform: translateX(5px) skewX(3deg) scale(1.03);   filter: hue-rotate(18deg) contrast(1.5) saturate(1.5); }
-  88% { transform: none; filter:none; }
-}
-
 /* Red flicker */
 @keyframes flicker {
   0%,100%   { opacity:1; }
@@ -152,9 +122,6 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  /* Periodic analog corruption, synced with the title's red/cyan split */
-  animation: ambientVideoGlitch 6s 1s infinite linear;
-  will-change: transform, filter;
 }
 
 /* CSS scanline grain */
@@ -344,8 +311,9 @@
   font-family:var(--fd); font-size:inherit; line-height:inherit; letter-spacing:inherit;
   pointer-events:none;
 }
-.hero-title::before { color:var(--red);  animation: g1 6s 1s infinite linear; }
-.hero-title::after  { color:cyan;        animation: g2 6s 1s infinite linear; opacity:.45; }
+/* RGB-split channels: hidden by default, only fire during the loop-seam burst */
+.hero-title::before { color:var(--red);  opacity:0; clip-path:inset(100% 0 0 0); }
+.hero-title::after  { color:cyan;        opacity:0; clip-path:inset(100% 0 0 0); }
 
 .hero-tagline {
   font-size: clamp(.65rem,1.4vw,.85rem);
